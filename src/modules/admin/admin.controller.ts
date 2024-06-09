@@ -1,12 +1,13 @@
-import { Controller, Get, Post, Body, UsePipes } from '@nestjs/common';
+import { Controller, Get, Post, Body, UsePipes, Param } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { AdminService } from './admin.service';
-import { Admin } from './admin.schema';
 import { ResponseDto } from '../../common/dto/response.dto';
 import { ResponseService } from '../../common/services/response.service';
 import { MailerService } from '../../common/services/mailer.service';
 import { JoiValidationPipe } from '../../common/dto/joi-validation.dto';
 import * as Joi from 'joi';
+import { IPaginationResponse } from 'src/common/typings';
+import { Admin } from './admin.interface';
 
 const sendEmailSchema = Joi.object({
   to: Joi.string().email().required(),
@@ -24,12 +25,20 @@ export class AdminController {
     private readonly mailerService: MailerService,
   ) {}
 
-  @ApiOperation({ summary: 'Get all users' })
-  @ApiResponse({ status: 200, description: 'Return the list of all users.' })
+  @ApiOperation({ summary: 'List' })
+  @ApiResponse({ status: 200, description: 'Return the list.' })
   @Get()
-  async findAll(): Promise<ResponseDto<Admin[]>> {
-    const response = await this.adminService.findAll();
-    return this.responseService.success(response, 'Success');
+  async list(): Promise<ResponseDto<IPaginationResponse>> {
+    const response = await this.adminService.paginateData([], {});
+    return this.responseService.success(response);
+  }
+
+  @ApiOperation({ summary: 'Detail' })
+  @ApiResponse({ status: 200, description: 'Return detail.' })
+  @Get(':id')
+  async get(@Param('id') id: string): Promise<ResponseDto<Admin>> {
+    const response = await this.adminService.findOne({ _id: id });
+    return this.responseService.success(response);
   }
 
   @ApiOperation({ summary: 'Send an email' })

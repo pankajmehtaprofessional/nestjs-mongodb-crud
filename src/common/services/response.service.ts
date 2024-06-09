@@ -1,13 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { ResponseDto } from '../dto/response.dto';
+import * as CONSTANT from '../../constants';
 
 @Injectable()
 export class ResponseService {
-  success<T>(data: T, message = 'Request successful'): ResponseDto<T> {
-    return new ResponseDto<T>(true, message, data);
+  success<T>(data: T): ResponseDto<T> {
+    return new ResponseDto<T>(
+      data,
+      CONSTANT.HTTP_CODE.OK,
+      CONSTANT.HTTP_MESSAGE.OK,
+    );
   }
 
-  error(message: string): ResponseDto<null> {
-    return new ResponseDto<null>(false, message, null);
+  error(message: string): ResponseDto<string> {
+    return new ResponseDto<string>(
+      message,
+      CONSTANT.HTTP_CODE.ERROR,
+      CONSTANT.HTTP_MESSAGE.ERROR,
+    );
   }
 }

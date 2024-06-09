@@ -1,10 +1,10 @@
 export class ResponseDto<T> {
-  success: boolean;
+  statusCode: number;
   message: string;
   data: T;
 
-  constructor(success: boolean, message: string, data: T) {
-    this.success = success;
+  constructor(data: T, statusCode: number, message: string) {
+    this.statusCode = statusCode;
     this.message = message;
     this.data = data;
   }
